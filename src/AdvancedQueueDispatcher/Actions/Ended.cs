@@ -2,18 +2,18 @@
 
 namespace AdvancedQueueDispatcher.Actions
 {
-    public class Offside : IAction
+    public class Ended : IAction
     {
         public string Message { get; private set; }
-
-        private Offside(string message)
+        
+        private Ended(string message)
         {
             Message = message;
         }
 
-        public static Offside Create(string team)
+        public static Ended Create()
         {
-            return new Offside(string.Format("{0} is offside", team));
+            return new Ended("Match ended");
         }
     }
 }

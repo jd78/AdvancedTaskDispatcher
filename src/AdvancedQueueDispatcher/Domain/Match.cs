@@ -1,6 +1,4 @@
-﻿using AdvancedQueueDispatcher.Actions;
-
-namespace AdvancedQueueDispatcher.Domain
+﻿namespace AdvancedQueueDispatcher.Domain
 {
     public class Match
     {
@@ -8,6 +6,7 @@ namespace AdvancedQueueDispatcher.Domain
         public string HomeTeam { get; private set; }
         public string AwayTeam { get; private set; }
         public IAction Action { get; private set; }
+        public int Version { get; private set; }
 
         private Match(int id, string homeTeam, string awayTeam)
         {
@@ -16,12 +15,13 @@ namespace AdvancedQueueDispatcher.Domain
             AwayTeam = awayTeam;
         }
 
-        private Match(int id, string homeTeam, string awayTeam, IAction action)
+        private Match(int id, string homeTeam, string awayTeam, IAction action, int version)
         {
             Id = id;
             HomeTeam = homeTeam;
             AwayTeam = awayTeam;
             Action = action;
+            Version = version;
         }
 
         public static Match Create(int id, string homeTeam, string awayTeam)
@@ -36,7 +36,9 @@ namespace AdvancedQueueDispatcher.Domain
 
         public Match WithAction(IAction action)
         {
-            return new Match(Id, HomeTeam, AwayTeam, action);
+            Version++;
+            var match = new Match(Id, HomeTeam, AwayTeam, action, Version);
+            return match;
         }
     }
 }

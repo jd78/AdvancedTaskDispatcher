@@ -1,9 +1,10 @@
+using AdvancedQueueDispatcher.Domain;
+
 namespace AdvancedQueueDispatcher.Actions
 {
     public class Goal : IAction
     {
         public string Message { get; private set; }
-        public int Version { get; private set; }
 
         private Goal(string message)
         {

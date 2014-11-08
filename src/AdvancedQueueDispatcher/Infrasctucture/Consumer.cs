@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using AdvancedQueueDispatcher.Actions;
 using AdvancedQueueDispatcher.Domain;
 
 namespace AdvancedQueueDispatcher.Infrasctucture
@@ -28,12 +29,23 @@ namespace AdvancedQueueDispatcher.Infrasctucture
             _matchActionQueue[match.Id].Add(match, _cancellationToken);
         }
 
-        private static void ProcesActions(BlockingCollection<Match> actionQueue, CancellationToken cancellationToken)
+        private void ProcesActions(BlockingCollection<Match> actionQueue, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var action = actionQueue.Take(cancellationToken);
-                Console.WriteLine("Thread Id {0} executed the action {1} for the match {2}", Thread.CurrentThread.ManagedThreadId, action.Action.Message, action);
+                var matchAction = actionQueue.Take(cancellationToken);
+                Console.WriteLine("Thread Id {0} executed the action {1} for the match {2}, version {3}", Thread.CurrentThread.ManagedThreadId, matchAction.Action.Message, matchAction, matchAction.Version);
+
+                //Kill the thread and remove the item.
+                if (matchAction.Action is Ended)
+                {
+                    BlockingCollection<Match> disposingMatch;
+                    _matchActionQueue.TryRemove(matchAction.Id, out disposingMatch);
+                    disposingMatch.Dispose();
+                    Console.WriteLine("Thread disposed");
+                    break;
+                }
+                
                 Thread.Sleep(2000);
             }
         }

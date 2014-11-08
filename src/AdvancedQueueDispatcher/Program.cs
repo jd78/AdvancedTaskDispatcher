@@ -11,31 +11,36 @@ namespace AdvancedQueueDispatcher
         {
             //Create two matches
             var matchOne = Match.Create(1, "Lazio", "Inter");
+            Console.WriteLine("Match {0} created", matchOne);
+
             var matchTwo = Match.Create(2, "Milan", "Roma");
+            Console.WriteLine("Match {0} created", matchTwo);
 
             var consumer = new Consumer();
 
             for (var i = 0; i < 10; i++)
             {
-                Match match;
                 if (i % 2 == 1)
-                    match = matchOne.WithAction(Goal.Create(matchOne.HomeTeam));
+                    matchOne = matchOne.WithAction(Goal.Create(matchOne.HomeTeam));
                 else
-                    match = matchOne.WithAction(Offside.Create(matchOne.AwayTeam));
+                    matchOne = matchOne.WithAction(Offside.Create(matchOne.AwayTeam));
 
-                consumer.AddMatchAction(match);
+                consumer.AddMatchAction(matchOne);
             }
+            matchOne = matchOne.WithAction(Ended.Create());
+            consumer.AddMatchAction(matchOne);
 
             for (var i = 0; i < 10; i++)
             {
-                Match match;
                 if (i % 2 == 1)
-                    match = matchTwo.WithAction(Goal.Create(matchTwo.HomeTeam));
+                    matchTwo = matchTwo.WithAction(Goal.Create(matchTwo.HomeTeam));
                 else
-                    match = matchTwo.WithAction(Offside.Create(matchTwo.AwayTeam));
+                    matchTwo = matchTwo.WithAction(Offside.Create(matchTwo.AwayTeam));
 
-                consumer.AddMatchAction(match);
+                consumer.AddMatchAction(matchTwo);
             }
+            matchTwo = matchTwo.WithAction(Ended.Create());
+            consumer.AddMatchAction(matchTwo);
 
             Console.ReadLine();
         }

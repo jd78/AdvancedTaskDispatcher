@@ -1,8 +1,7 @@
-﻿namespace AdvancedQueueDispatcher.Actions
+﻿namespace AdvancedQueueDispatcher.Domain
 {
     public interface IAction
     {
         string Message { get; }
-        int Version { get; }
     }
 }
