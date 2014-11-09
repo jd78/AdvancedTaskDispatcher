@@ -17,36 +17,30 @@ namespace AdvancedQueueDispatcher
             var matchTwo = Match.Create(2, "Milan", "Roma");
             Console.WriteLine("Match {0} created", matchTwo);
 
-            var consumer = new ActionService();
+            var actionService = new ActionService();
             //var consumer = new ActionServiceWithTimeout();
 
             for (var i = 0; i < 10; i++)
             {
                 if (i % 2 == 1)
-                    matchOne = matchOne.WithAction(Goal.Create(matchOne.HomeTeam));
+                    actionService.AddMatchAction(matchOne.WithAction(Goal.Create(matchOne.HomeTeam)));
                 else
-                    matchOne = matchOne.WithAction(Offside.Create(matchOne.AwayTeam));
-
-                consumer.AddMatchAction(matchOne);
+                    actionService.AddMatchAction(matchOne.WithAction(Offside.Create(matchOne.AwayTeam)));
             }
-            matchOne = matchOne.WithAction(Ended.Create());
-            consumer.AddMatchAction(matchOne);
+            actionService.AddMatchAction(matchOne.WithAction(Ended.Create()));
 
             for (var i = 0; i < 10; i++)
             {
                 if (i % 2 == 1)
-                    matchTwo = matchTwo.WithAction(Goal.Create(matchTwo.HomeTeam));
+                    actionService.AddMatchAction(matchTwo.WithAction(Goal.Create(matchTwo.HomeTeam)));
                 else
-                    matchTwo = matchTwo.WithAction(Offside.Create(matchTwo.AwayTeam));
+                    actionService.AddMatchAction(matchTwo.WithAction(Offside.Create(matchTwo.AwayTeam)));
 
-                consumer.AddMatchAction(matchTwo);
-
-                if(i==5)
+                if (i == 5)
                     Thread.Sleep(6000);
             }
-            matchTwo = matchTwo.WithAction(Ended.Create());
-            consumer.AddMatchAction(matchTwo);
-
+            actionService.AddMatchAction(matchTwo.WithAction(Ended.Create()));
+            
             Console.ReadLine();
         }
     }
