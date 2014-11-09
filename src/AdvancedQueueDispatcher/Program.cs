@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using AdvancedQueueDispatcher.Actions;
 using AdvancedQueueDispatcher.Domain;
 using AdvancedQueueDispatcher.Infrasctucture;
@@ -16,7 +17,8 @@ namespace AdvancedQueueDispatcher
             var matchTwo = Match.Create(2, "Milan", "Roma");
             Console.WriteLine("Match {0} created", matchTwo);
 
-            var consumer = new Consumer();
+            var consumer = new ActionService();
+            //var consumer = new ActionServiceWithTimeout();
 
             for (var i = 0; i < 10; i++)
             {
@@ -38,6 +40,9 @@ namespace AdvancedQueueDispatcher
                     matchTwo = matchTwo.WithAction(Offside.Create(matchTwo.AwayTeam));
 
                 consumer.AddMatchAction(matchTwo);
+
+                if(i==5)
+                    Thread.Sleep(6000);
             }
             matchTwo = matchTwo.WithAction(Ended.Create());
             consumer.AddMatchAction(matchTwo);

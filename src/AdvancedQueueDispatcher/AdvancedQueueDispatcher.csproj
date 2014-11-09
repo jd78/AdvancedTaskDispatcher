@@ -44,6 +44,7 @@
     <Compile Include="Actions\Ended.cs" />
     <Compile Include="Actions\Goal.cs" />
     <Compile Include="Actions\Offside.cs" />
+    <Compile Include="Infrasctucture\ActionServiceWithTimeout.cs" />
     <Compile Include="Infrasctucture\ActionService.cs" />
     <Compile Include="Domain\IAction.cs" />
     <Compile Include="Domain\Match.cs" />

@@ -7,12 +7,13 @@ using AdvancedQueueDispatcher.Domain;
 
 namespace AdvancedQueueDispatcher.Infrasctucture
 {
-    public class ActionService : IActionService
+    //Alternative implementation
+    public class ActionServiceWithTimeout : IActionService
     {
         private readonly ConcurrentDictionary<int, BlockingCollection<Match>> _matchActionQueue;
         private readonly CancellationToken _cancellationToken;
 
-        public ActionService()
+        public ActionServiceWithTimeout()
         {
             _matchActionQueue = new ConcurrentDictionary<int, BlockingCollection<Match>>();
             _cancellationToken = new CancellationToken();
@@ -27,27 +28,31 @@ namespace AdvancedQueueDispatcher.Infrasctucture
                 Task.Factory.StartNew(() => ProcessActions(actionQueue, _cancellationToken), _cancellationToken);
             }
             _matchActionQueue[match.Id].Add(match, _cancellationToken);
+            if (match.Action is Ended)
+                _matchActionQueue[match.Id].CompleteAdding();
         }
 
         private void ProcessActions(BlockingCollection<Match> actionQueue, CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            var matchId = 0;
+            while (!cancellationToken.IsCancellationRequested && !actionQueue.IsCompleted)
             {
-                var matchAction = actionQueue.Take(cancellationToken);
-                Console.WriteLine("Thread Id {0} executed the action {1} for the match {2}, version {3}", Thread.CurrentThread.ManagedThreadId, matchAction.Action.Message, matchAction, matchAction.Version);
-
-                //Kill the thread and remove the item.
-                if (matchAction.Action is Ended)
+                Match matchAction;
+                actionQueue.TryTake(out matchAction, TimeSpan.FromSeconds(5));
+                if (matchAction == null)
                 {
-                    BlockingCollection<Match> disposingMatch;
-                    _matchActionQueue.TryRemove(matchAction.Id, out disposingMatch);
-                    disposingMatch.Dispose();
-                    Console.WriteLine("Thread disposed");
+                    actionQueue.CompleteAdding();
                     break;
                 }
-                
-                Thread.Sleep(2000);
+
+                matchId = matchAction.Id;
+                Console.WriteLine("Thread Id {0} executed the action {1} for the match {2}, version {3}", Thread.CurrentThread.ManagedThreadId, matchAction.Action.Message, matchAction, matchAction.Version);
             }
+
+            BlockingCollection<Match> disposingMatch;
+            _matchActionQueue.TryRemove(matchId, out disposingMatch);
+            disposingMatch.Dispose();
+            Console.WriteLine("Thread disposed");
         }
     }
 }
