@@ -7,7 +7,7 @@ using AdvancedQueueDispatcher.Domain;
 
 namespace AdvancedQueueDispatcher.Infrasctucture
 {
-    public class Consumer : IConsumer
+    public class Consumer : IActionService
     {
         private readonly ConcurrentDictionary<int, BlockingCollection<Match>> _matchActionQueue;
         private readonly CancellationToken _cancellationToken;
@@ -24,12 +24,12 @@ namespace AdvancedQueueDispatcher.Infrasctucture
             {
                 var actionQueue = new BlockingCollection<Match>();
                 _matchActionQueue.TryAdd(match.Id, actionQueue);
-                Task.Factory.StartNew(() => ProcesActions(actionQueue, _cancellationToken), _cancellationToken);
+                Task.Factory.StartNew(() => ProcessActions(actionQueue, _cancellationToken), _cancellationToken);
             }
             _matchActionQueue[match.Id].Add(match, _cancellationToken);
         }
 
-        private void ProcesActions(BlockingCollection<Match> actionQueue, CancellationToken cancellationToken)
+        private void ProcessActions(BlockingCollection<Match> actionQueue, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {

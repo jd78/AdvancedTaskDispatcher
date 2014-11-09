@@ -44,10 +44,10 @@
     <Compile Include="Actions\Ended.cs" />
     <Compile Include="Actions\Goal.cs" />
     <Compile Include="Actions\Offside.cs" />
-    <Compile Include="Infrasctucture\Consumer.cs" />
+    <Compile Include="Infrasctucture\ActionService.cs" />
     <Compile Include="Domain\IAction.cs" />
     <Compile Include="Domain\Match.cs" />
-    <Compile Include="Infrasctucture\IConsumer.cs" />
+    <Compile Include="Infrasctucture\IActionService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

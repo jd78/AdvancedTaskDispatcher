@@ -2,7 +2,7 @@ using AdvancedQueueDispatcher.Domain;
 
 namespace AdvancedQueueDispatcher.Infrasctucture
 {
-    public interface IConsumer
+    public interface IActionService
     {
         void AddMatchAction(Match match);
     }
