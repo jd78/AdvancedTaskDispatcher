@@ -1,2 +1,2 @@
 language: csharp
-solution: AdvancedQueueDispatcher.sln
+solution: src/AdvancedQueueDispatcher.sln
